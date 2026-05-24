@@ -1,95 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SecurityScan-Agent — AI Security Scanner</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecurityScan Agent — URL Security Scanner</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header">
-    <h1>🛡️ SecurityScan-Agent</h1>
-    <div class="header-right">
-      <button class="btn btn-scan" id="btnScan">▶ Start Scan</button>
-      <button class="btn btn-export">📥 Export</button>
-    </div>
-  </header>
-
-  <main class="main-grid">
-    <aside class="sidebar">
-      <h3>Scan Target</h3>
-      <div class="scan-target">
-        <div class="target-label">Target</div>
-        <div class="target-value">192.168.1.0/24</div>
-      </div>
-      <div class="scan-target">
-        <div class="target-label">Domain</div>
-        <div class="target-value">*.example.com</div>
-      </div>
-      <div class="scan-target">
-        <div class="target-label">Scan Type</div>
-        <div class="target-value">Full Comprehensive</div>
-      </div>
-
-      <h3 style="margin-top: 20px;">Severity Breakdown</h3>
-      <div class="severity-summary">
-        <div class="severity-row critical">
-          <div class="severity-label"><span class="severity-dot critical"></span> Critical</div>
-          <span class="severity-count" id="count-critical">0</span>
+    <header class="top-bar">
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <h1>SecurityScan Agent</h1>
         </div>
-        <div class="severity-row high">
-          <div class="severity-label"><span class="severity-dot high"></span> High</div>
-          <span class="severity-count" id="count-high">0</span>
-        </div>
-        <div class="severity-row medium">
-          <div class="severity-label"><span class="severity-dot medium"></span> Medium</div>
-          <span class="severity-count" id="count-medium">0</span>
-        </div>
-        <div class="severity-row low">
-          <div class="severity-label"><span class="severity-dot low"></span> Low</div>
-          <span class="severity-count" id="count-low">0</span>
-        </div>
-      </div>
+        <nav class="nav-tabs">
+            <button class="tab active" data-tab="scan">Scan</button>
+            <button class="tab" data-tab="history">History</button>
+        </nav>
+    </header>
 
-      <h3 style="margin-top: 20px;">Total Findings</h3>
-      <div style="font-size: 2rem; font-weight: 700; color: var(--accent-neon); text-align: center; padding: 8px;" id="totalFindings">0</div>
-    </aside>
+    <main class="container">
+        <!-- SCAN TAB -->
+        <section id="tab-scan" class="tab-content active">
+            <div class="scanner-panel">
+                <h2>URL Security Scanner</h2>
+                <p class="subtitle">Enter a URL to perform a comprehensive security analysis.</p>
+                <div class="input-row">
+                    <input type="url" id="urlInput" placeholder="https://example.com" autocomplete="off" spellcheck="false" />
+                    <button id="scanBtn" class="btn-primary">Scan</button>
+                </div>
+                <div id="scanError" class="error-msg hidden"></div>
+            </div>
 
-    <section class="main-content">
-      <div class="scan-progress-section">
-        <div class="scan-header">
-          <div class="scan-title">🔍 Scan Progress</div>
-          <div class="scan-pct" id="progressPct">0%</div>
-        </div>
-        <div class="scan-bar-container">
-          <div class="scan-bar" id="progressBar"></div>
-        </div>
-        <div class="scan-phase" id="scanPhase">Idle — waiting to start</div>
-      </div>
+            <!-- Progress Bar -->
+            <div id="progressSection" class="hidden">
+                <div class="progress-header">
+                    <span id="progressLabel">Initializing scan...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-track">
+                    <div id="progressBar" class="progress-bar-fill" style="width:0%"></div>
+                </div>
+                <div id="progressLog" class="progress-log"></div>
+            </div>
 
-      <div class="findings-header">
-        <span>Vulnerability Findings</span>
-        <span class="finding-count"><span id="totalFindingsH">0</span> issues</span>
-      </div>
-      <div id="findingsList"></div>
-    </section>
+            <!-- Results -->
+            <div id="resultsSection" class="hidden">
+                <div class="results-header">
+                    <h2>Scan Results</h2>
+                    <div class="results-actions">
+                        <span id="scoreBadge" class="score-badge">—</span>
+                        <button id="exportBtn" class="btn-secondary">Export Report</button>
+                    </div>
+                </div>
 
-    <aside class="right-panel">
-      <div class="panel-block">
-        <h3>Open Ports</h3>
-        <div class="port-list" id="portList"></div>
-      </div>
-      <div class="panel-block" style="flex:1; display:flex; flex-direction:column;">
-        <h3>Scan Log</h3>
-        <div class="scan-log" id="scanLog"></div>
-      </div>
-    </aside>
-  </main>
+                <div id="summaryCards" class="summary-cards"></div>
 
-  <div class="detail-overlay" id="detailOverlay">
-    <div class="detail-box" id="detailBox"></div>
-  </div>
+                <!-- Tabs for result categories -->
+                <div class="result-tabs">
+                    <button class="rtab active" data-rtab="headers">HTTP Headers</button>
+                    <button class="rtab" data-rtab="ssl">SSL Certificate</button>
+                    <button class="rtab" data-rtab="ports">Open Ports</button>
+                    <button class="rtab" data-rtab="xss">XSS Patterns</button>
+                    <button class="rtab" data-rtab="traversal">Dir Traversal</button>
+                </div>
 
-  <script src="app.js"></script>
+                <div id="rpanel-headers" class="rpanel active"></div>
+                <div id="rpanel-ssl" class="rpanel"></div>
+                <div id="rpanel-ports" class="rpanel"></div>
+                <div id="rpanel-xss" class="rpanel"></div>
+                <div id="rpanel-traversal" class="rpanel"></div>
+            </div>
+        </section>
+
+        <!-- HISTORY TAB -->
+        <section id="tab-history" class="tab-content">
+            <div class="history-header">
+                <h2>Scan History</h2>
+                <button id="clearHistoryBtn" class="btn-danger">Clear History</button>
+            </div>
+            <div id="historyList" class="history-list"></div>
+            <div id="historyEmpty" class="empty-state">No scan history yet. Run your first scan!</div>
+
+            <!-- Re-show results from history -->
+            <div id="historyDetail" class="hidden">
+                <button id="backToHistoryBtn" class="btn-secondary">← Back to History</button>
+                <div id="historyResults"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>SecurityScan Agent v2.0 — Browser-based URL security analysis tool</p>
+    </footer>
+
+    <script src="app.js"></script>
 </body>
 </html>

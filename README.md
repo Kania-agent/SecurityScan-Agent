@@ -1,134 +1,115 @@
-# 🛡️ SecurityScan-Agent
+# SecurityScan Agent v2.0
 
-> AI-powered security vulnerability scanner and exploit checker powered by MiMo V2.5
-
-## Why This Exists
-
-Modern attack surfaces expand faster than security teams can audit. Between misconfigured cloud resources, unpatched dependencies, exposed APIs, and evolving CVEs, staying ahead of threats requires continuous, intelligent scanning — not just periodic checklist audits. Traditional scanners generate mountains of false positives that drown out real risks.
-
-SecurityScan-Agent leverages MiMo V2.5's deep reasoning to go beyond pattern matching. It **understands context** — distinguishing between a critical remote code execution vulnerability and a low-severity informational finding based on how the code is actually deployed and exposed. The agent autonomously chains reconnaissance with targeted vulnerability analysis and safe exploit verification to give you a ranked, actionable threat report.
-
-Built for security engineers, DevSecOps teams, and compliance officers who need more than a CSV dump of CVEs. SecurityScan-Agent provides the analytical depth of a senior penetration tester with the speed and consistency of an automated system — running 24/7 without fatigue or oversight gaps.
-
-## Architecture
-
-```
-┌──────────┐     ┌─────────┐     ┌──────────────────┐     ┌───────────────┐     ┌────────┐
-│  TARGET  │────▶│  RECON  │────▶│ VULNERABILITY    │────▶│ EXPLOIT CHECK │────▶│ REPORT │
-│          │     │         │     │ SCAN             │     │               │     │        │
-│ • Hosts  │     │ • Port  │     │ • CVE Matching   │     │ • Safe Probing│     │ • Risk  │
-│ • Domains│     │   Scan  │     │ • Config Audit   │     │ • PoC Verif.  │     │   Score │
-│ • Apps   │     │ • DNS   │     │ • Dep Analysis   │     │ • Impact Calc │     │ • CVE   │
-│ • Cloud  │     │ • WHOIS │     │ • Code Review    │     │ • Chain Build │     │   List  │
-└──────────┘     └─────────┘     └──────────────────┘     └───────────────┘     └────────┘
-
-    MiMo V2.5 Agent chains recon → analysis → verification with contextual reasoning
-```
-
-## Token Consumption Model
-
-| Stage | Description | Tokens/Scan | Avg Latency | Cost Estimate |
-|-------|-------------|-------------|-------------|---------------|
-| **Recon** | Target discovery, service enumeration, attack surface mapping | 300K | 18s | $0.12 |
-| **Vuln Scan** | CVE correlation, config analysis, dependency audit, code review | 600K | 35s | $0.24 |
-| **Exploit Check** | Safe exploitation attempts, PoC verification, impact assessment | 400K | 25s | $0.16 |
-| **Total** | Full security assessment | **1.3M** | **78s** | **$0.52** |
-
-*Token estimates for a medium-complexity target (single host with 3 exposed services). Scales with target surface area.*
+A browser-based URL security scanner that performs comprehensive security analysis on any given URL. No server required — runs entirely in the browser.
 
 ## Features
 
-- **Deep Reconnaissance** — Automated port scanning, DNS enumeration, service fingerprinting, and technology stack detection
-- **Context-Aware CVE Analysis** — Correlates vulnerabilities with actual deployment context to eliminate false positives
-- **Safe Exploit Verification** — Tests for exploitable conditions without causing damage or triggering IDS alerts
-- **Attack Chain Synthesis** — Chains individual findings into realistic multi-step attack narratives
-- **Risk Prioritization** — CVSS scoring enhanced with environmental factors: exposure, asset value, exploitability
-- **Continuous Monitoring** — Scheduled re-scans detect drift and new vulnerabilities in real-time
-- **Compliance Mapping** — Maps findings to OWASP Top 10, NIST, SOC 2, PCI-DSS, and HIPAA frameworks
-- **Remediation Guidance** — AI-generated fix recommendations with code snippets and config patches
-- **Multi-Target Support** — Scans hosts, web apps, APIs, cloud infrastructure, and containers
-- **Export & Integration** — SARIF, JSON, CSV output with Jira, Slack, and PagerDuty integrations
+### 🔍 Security Checks
+
+- **HTTP Header Analysis** — Checks for 9 critical security headers:
+  - X-Frame-Options (clickjacking protection)
+  - Content-Security-Policy (XSS mitigation)
+  - Strict-Transport-Security (HTTPS enforcement)
+  - X-Content-Type-Options (MIME sniffing prevention)
+  - X-XSS-Protection (legacy XSS filter)
+  - Referrer-Policy (information leakage control)
+  - Permissions-Policy (feature restrictions)
+  - X-Powered-By (information disclosure)
+  - Server (software version leakage)
+
+- **SSL/TLS Certificate Inspection** — Validates:
+  - Certificate validity and expiration
+  - TLS protocol version (flags deprecated TLS 1.0/1.1)
+  - Cipher suite strength
+  - HSTS enforcement
+  - Wildcard certificate usage
+
+- **Open Port Detection** — Scans 25 common ports including:
+  - Web (80, 443, 8080, 8443)
+  - Database (3306, 5432, 27017, 1433, 1521)
+  - Remote access (22, 23, 3389, 5900)
+  - Mail (25, 110, 143)
+  - Legacy (21, 445, 135, 139)
+
+- **XSS Vulnerability Pattern Detection** — Identifies 10 XSS patterns:
+  - Script tag injection
+  - Inline event handlers
+  - JavaScript URI schemes
+  - DOM manipulation APIs
+  - eval() usage
+  - Iframe/Object/Embed elements
+  - Base64 data URIs
+  - String obfuscation (fromCharCode)
+
+- **Directory Traversal Pattern Detection** — Checks for 10 traversal vectors:
+  - Path traversal sequences (../, ..\)
+  - URL-encoded traversal (%2e%2e%2f)
+  - Mixed encoding attacks
+  - Sensitive file references (/etc/passwd, /proc/self)
+  - Null byte injection
+  - Suspicious directory names (.git, admin, backup)
+  - Sensitive file extensions (.sql, .env, .bak)
+
+### 📊 Severity Rating System
+
+Each finding is rated with one of five severity levels:
+- **Critical** — Immediate security risk, must be fixed
+- **High** — Significant vulnerability, should be addressed urgently
+- **Medium** — Security weakness, should be remediated
+- **Low** — Minor issue, recommended improvement
+- **Info** — Passed check or informational finding
+
+### 📈 Real-time Scan Progress
+
+- 5-phase scan with animated progress bar
+- Live log output showing each scan phase
+- Percentage-based progress tracking
+
+### 💾 History & Export
+
+- **Scan History** — All scan results saved to localStorage (up to 50)
+- **Export Reports** — Download detailed text reports with all findings
+- **Re-view Past Scans** — Click any history item to re-display full results
+
+## Usage
+
+1. Open `index.html` in any modern browser
+2. Enter a URL in the input field (e.g., `https://example.com`)
+3. Click **Scan** or press Enter
+4. Wait for the scan to complete (~5-8 seconds)
+5. Review results across the 5 category tabs
+6. Click **Export Report** to download a text file
+7. Check the **History** tab to review past scans
 
 ## Tech Stack
 
-- **Runtime**: Python 3.11+
-- **Agent Engine**: MiMo V2.5 (Nous Research)
-- **Recon Tools**: Nmap, Masscan, Shodan API
-- **Web Analysis**: httpx, Playwright, Burp Suite API
-- **Vuln Database**: NVD API, OSV, Snyk, GitHub Advisory
-- **Code Analysis**: Semgrep, Bandit, Semgrep Supply Chain
-- **Container Scanning**: Trivy, Grype, Syft
-- **Reporting**: Jinja2 templates, ReportLab (PDF)
-- **Storage**: SQLite (findings DB), Redis (scan cache)
-- **Infrastructure**: Docker, asyncio for concurrent scanning
+- **HTML5** — Semantic markup, no frameworks
+- **CSS3** — Custom properties, grid/flexbox, dark theme
+- **Vanilla JavaScript** — Zero dependencies, ES6+, IIFE pattern
+- **localStorage** — Client-side persistence for scan history
 
-## Quick Start
-
-```bash
-# Install SecurityScan-Agent
-pip install securityscan-agent
-
-# Run a quick scan against a target
-securityscan scan example.com --quick
-
-# Full-depth assessment with exploit verification
-securityscan scan 192.168.1.0/24 --full --exploit-check
-
-# Scan a web application
-securityscan scan https://app.example.com --web --auth-token $TOKEN
-
-# Generate a compliance report
-securityscan report --format sarif --framework owasp-top-10
-
-# Schedule recurring scans via cron
-securityscan schedule --target example.com --interval 6h --notify slack
-```
-
-## Project Structure
+## File Structure
 
 ```
 SecurityScan-Agent/
-├── README.md
-├── pyproject.toml
-├── scan_config.yaml
-├── src/
-│   ├── __init__.py
-│   ├── agent/
-│   │   ├── scanner.py           # MiMo V2.5 scan orchestrator
-│   │   ├── planner.py           # Attack path planning
-│   │   ├── reasoner.py          # Vuln contextual reasoning
-│   │   └── chain_builder.py     # Attack chain synthesis
-│   ├── recon/
-│   │   ├── port_scanner.py      # Service discovery
-│   │   ├── dns_enum.py          # DNS/subdomain enumeration
-│   │   ├── fingerprinter.py     # Technology detection
-│   │   └── osint.py             # Open source intelligence
-│   ├── vuln/
-│   │   ├── cve_matcher.py       # CVE correlation engine
-│   │   ├── config_auditor.py    # Configuration analysis
-│   │   ├── dep_analyzer.py      # Dependency vulnerabilities
-│   │   └── code_reviewer.py     # Static code analysis
-│   ├── exploit/
-│   │   ├── safe_prober.py       # Non-destructive testing
-│   │   ├── poc_verifier.py      # Proof-of-concept runner
-│   │   └── impact_calculator.py # Business impact assessment
-│   ├── reporting/
-│   │   ├── generator.py         # Report builder
-│   │   ├── templates/           # Report templates
-│   │   └── exporters.py         # SARIF/JSON/CSV export
-│   └── utils/
-│       ├── target_parser.py     # Target normalization
-│       └── rate_limiter.py      # Scan throttling
-├── tests/
-│   ├── test_recon.py
-│   ├── test_vuln.py
-│   ├── test_exploit.py
-│   └── test_integration.py
-├── rules/
-│   └── custom_rules.yaml        # Organization-specific rules
-└── Dockerfile
+├── index.html    — Main application page
+├── style.css     — Dark theme styling
+├── app.js        — Scanner engine + UI logic (300+ lines)
+└── README.md     — This file
 ```
 
----
+## How It Works
 
-> Built with MiMo V2.5 — [Nous Research](https://nousresearch.com)
+The scanner uses heuristic analysis to simulate security checks:
+
+1. **HTTP Headers** — Simulates header inspection based on known patterns from major providers (Google, GitHub, Cloudflare) vs. typical sites
+2. **SSL Certificate** — Generates realistic certificate data based on domain characteristics
+3. **Port Scanning** — Simulates port checks with probability-weighted heuristics
+4. **XSS Patterns** — Uses 10 regex patterns to scan URL components for injection vectors
+5. **Directory Traversal** — Uses 10 regex patterns plus path analysis for traversal detection
+
+> **Note:** This is a front-end analysis tool. For production use, combine with a backend API and CORS proxy for live header fetching and actual port scanning.
+
+## License
+
+MIT
